@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rise Online • Death Valley Radar V6</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar"><div class="brand">RISE ONLINE <b>• DEATH VALLEY RADAR V6</b> <span class="online">● ONLINE</span></div><div class="top-actions"><span id="lastUpdate"></span><button id="resetAll">HARİTAYI SIFIRLA</button><button id="fullscreen">⛶ TAM EKRAN</button></div></header>
+<main class="layout">
+<aside class="left panel">
+<h3>KATMANLAR</h3>
+<label><input type="checkbox" checked data-layer="ancient"> Ancient (7)</label>
+<label><input type="checkbox" checked data-layer="spawn"> Spawn Bölgeleri</label>
+<label><input type="checkbox" checked data-layer="portal"> Portal (3)</label>
+<label><input type="checkbox" checked data-layer="boss"> Boss (5)</label>
+<label><input type="checkbox" checked data-layer="gather"> Normal Gathering</label>
+<label><input type="checkbox" data-layer="event"> Event</label>
+<hr>
+<h3>HIZLI ARAMA</h3><input id="search" class="search" placeholder="Ancient, boss, portal...">
+<h3>ANCIENT LİSTESİ (7)</h3><div id="ancientList"></div>
+<hr><h3>GÜVEN SEVİYESİ</h3>
+<div class="legend"><span class="g high"></span><b>YÜKSEK</b><small>Birden fazla kaynak ile doğrulandı</small><span class="g mid"></span><b>ORTA</b><small>Kaynaklarla destekleniyor</small><span class="g low"></span><b>DÜŞÜK</b><small>Tahmini bölge</small></div>
+</aside>
+<section class="center">
+<div class="map-toolbar"><button class="gold">MAP</button><button id="mapReset">RESET VIEW</button><span>DEATH VALLEY · <em>REMOTE VIEW</em></span></div>
+<div class="map-wrap" id="mapWrap"><img id="mapImg" src="assets/death-valley-v6-map.jpg" alt="Death Valley"><div id="mapOverlay"></div><div class="zoom"><button id="zoomIn">+</button><button id="zoomOut">−</button></div><button id="centerMap" class="centerBtn">◎ MERKEZE DÖN</button></div>
+<div class="hint">Haritayı sürükle • Tekerlek: zoom • Sol tık: işaret seç</div>
+<section class="drops" id="drops"></section>
+</section>
+<aside class="right panel"><div class="rightHead"><div><b>ANCIENT SAYAÇLARI</b> <span class="green">(CANLI)</span></div><select id="filter"><option value="all">Tümü</option><option value="respawn">Respawn</option><option value="ready">Ready</option><option value="soon">&lt;10 DK</option></select></div>
+<div class="status"><b>● RADAR HAZIR</b><small>Bağımsız kalıcı geri sayım sistemi</small><div class="stats"><span><b id="total">7</b><small>TOPLAM</small></span><span><b id="ready">7</b><small>READY</small></span><span><b id="respawn">0</b><small>RESPAWN</small></span><span><b id="soon">0</b><small>&lt;10 DK</small></span></div></div>
+<div id="timers"></div>
+<div class="bossBox"><h3>DEATH VALLEY BOSS</h3><p>Resmî kaynaklarda Death Valley bossları için tek tek sabit süre değil <b>1–5 saat</b> respawn aralığı yayımlanmıştır. Bu nedenle aşağıdaki alanlar “doğrulanmış aralık” olarak gösterilir.</p><div id="bosses"></div></div>
+<div class="system"><h3>SİSTEM BİLGİSİ</h3><div>Tarayıcı Saati: <span id="clock"></span></div><div>Otomatik Güncelleme: <b class="green">AKTİF</b></div><div>Veri: Rise Online World / topluluk doğrulaması</div></div>
+</aside>
+</main>
+<script src="js/app.js"></script>
+</body></html>
