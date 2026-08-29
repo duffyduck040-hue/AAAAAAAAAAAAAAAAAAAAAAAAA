@@ -1,0 +1,29 @@
+const ancients=[
+{name:'Ancient Tree',role:'Woodcutting',sec:3600,c:'#32e875',coord:'G-8',drops:['Aarvad Leaf','Oak Wood','Pine Wood','Aspen Wood','Birch Wood','Holy Tree Wood','Firefly Wood','Soulsage Wood']},
+{name:'Ancient Mine',role:'Mining',sec:4200,c:'#2ea7ff',coord:'E-2',drops:['Copper Ore','Iron Ore','Titanium Ore','Gold Ore','Silver Dust','Gold Dust']},
+{name:'Ancient Stone',role:'Quarrying',sec:3000,c:'#d7dbe0',coord:'I-5',drops:['Stoneblock','Marble','Granite','Sphere of Fire','Sphere of Water','Sphere of Air','Poison Essence']},
+{name:'Ancient Excavation',role:'Archaeology',sec:6000,c:'#ff9b22',coord:'E-6',drops:['Crude Amber','Crude Emerald','Crude Ruby','Crude Amethyst','Crude Sapphire','Crude Topaz','Rare Obsidian']},
+{name:'Ancient Beast',role:'Skinning',sec:28800,c:'#ff4747',coord:'D-9',drops:['Stag Hide','Boar Hide','Tiger Hide','Bear Hide','Zebra Hide','Wolf Hide','Leopard Hide','Elephant Hide']},
+{name:'Ancient Basket',role:'Harvesting',sec:4800,c:'#f0c21d',coord:'H-8',drops:['Tomato','Potato','Corn','Carrot','Onion','Asparagus','Mushroom','Lemon','Garlic','Pepper','Zucchini','Grape']},
+{name:'Ancient Bush',role:'Herbalism',sec:10800,c:'#b46cff',coord:'C-4',drops:['Aarvad Leaf','Wormwood','Rosehip','Dill','Rose Petals','Sage','Cranberry','Vervain','Valerian']}
+];
+const bosses=['Deathlord','Dread Cyclops','Diviner','Flame Rock','Satyr'];
+const key='dv-v6-state'; let state=JSON.parse(localStorage.getItem(key)||'{}');
+function save(){localStorage.setItem(key,JSON.stringify(state))}
+function fmt(s){s=Math.max(0,Math.floor(s));let h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return [h,m,x].map((v,i)=>i===0?String(v).padStart(2,'0'):String(v).padStart(2,'0')).join(':')}
+function remaining(a){return state[a.name]?.end?Math.max(0,Math.ceil((state[a.name].end-Date.now())/1000)):0}
+function start(a){state[a.name]={end:Date.now()+a.sec*1000};save();render()}
+function reset(a){delete state[a.name];save();render()}
+function renderList(){document.querySelector('#ancientList').innerHTML=ancients.map(a=>`<div class="anc" data-name="${a.name}"><span class="dot" style="--c:${a.c}"></span><div><b>${a.name}</b><small>${a.role} · ${a.sec/3600<1?(a.sec/60)+' DK':a.sec/3600+' SAAT'}</small></div></div>`).join('')}
+function renderTimers(){const f=document.querySelector('#filter').value;let arr=ancients.filter(a=>{let r=remaining(a);return f==='all'||(f==='ready'&&!r)||(f==='respawn'&&r)||(f==='soon'&&r>0&&r<=600)});document.querySelector('#timers').innerHTML=arr.map(a=>{let r=remaining(a),pct=r?a.sec?((a.sec-r)/a.sec*100):0:100;return `<article class="timer" style="--accent:${a.c}"><div class="timerTop"><div><div class="timerName">${a.name}</div><div class="role">${a.role} · ${a.coord}</div></div><span class="${r?'respawn':'ready'}">${r?'• RESPAWN':'• READY'}</span></div><div class="time">${r?fmt(r):fmt(a.sec)}</div><div class="progress"><i style="width:${pct}%"></i></div><div class="timerBtns"><button class="start" data-start="${a.name}">TOPLANDI · BAŞLAT</button><button data-reset="${a.name}">RESET</button></div></article>`}).join('');document.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>start(ancients.find(a=>a.name===b.dataset.start)));document.querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>reset(ancients.find(a=>a.name===b.dataset.reset)));
+let ready=ancients.filter(a=>!remaining(a)).length, resp=7-ready, soon=ancients.filter(a=>{let r=remaining(a);return r>0&&r<=600}).length;document.querySelector('#ready').textContent=ready;document.querySelector('#respawn').textContent=resp;document.querySelector('#soon').textContent=soon}
+function renderDrops(){document.querySelector('#drops').innerHTML=ancients.map(a=>`<div class="drop" style="border-color:${a.c}55"><h4 style="color:${a.c}">${a.name.toUpperCase()}</h4><ul>${a.drops.map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('')}
+function renderBosses(){document.querySelector('#bosses').innerHTML=bosses.map(n=>`<div class="boss"><b>☠ ${n}</b><span>1–5 SAAT</span></div>`).join('')}
+function render(){renderTimers();document.querySelector('#lastUpdate').textContent='SON GÜNCELLEME: '+new Date().toLocaleString('tr-TR');document.querySelector('#clock').textContent=new Date().toLocaleString('tr-TR');}
+renderList();renderDrops();renderBosses();render();setInterval(render,1000);
+document.querySelector('#filter').onchange=renderTimers;
+document.querySelector('#search').oninput=e=>document.querySelectorAll('.anc').forEach(x=>x.classList.toggle('hidden',!x.dataset.name.toLowerCase().includes(e.target.value.toLowerCase())));
+document.querySelector('#resetAll').onclick=()=>{if(confirm('Tüm sayaçlar sıfırlansın mı?')){state={};save();render()}};
+document.querySelector('#fullscreen').onclick=()=>document.documentElement.requestFullscreen?.();
+let scale=1,x=0,y=0,drag=false,sx=0,sy=0;const wrap=document.querySelector('#mapWrap'),img=document.querySelector('#mapImg');function apply(){img.style.transform=`translate(${x}px,${y}px) scale(${scale})`};document.querySelector('#zoomIn').onclick=()=>{scale=Math.min(2.6,scale+.15);apply()};document.querySelector('#zoomOut').onclick=()=>{scale=Math.max(.55,scale-.15);apply()};document.querySelector('#centerMap').onclick=document.querySelector('#mapReset').onclick=()=>{scale=1;x=0;y=0;apply()};wrap.addEventListener('wheel',e=>{e.preventDefault();scale=Math.min(2.6,Math.max(.55,scale+(e.deltaY<0?.1:-.1)));apply()},{passive:false});wrap.addEventListener('mousedown',e=>{drag=true;sx=e.clientX-x;sy=e.clientY-y;wrap.classList.add('dragging')});window.addEventListener('mouseup',()=>{drag=false;wrap.classList.remove('dragging')});window.addEventListener('mousemove',e=>{if(drag){x=e.clientX-sx;y=e.clientY-sy;apply()}});
+document.querySelectorAll('[data-layer]').forEach(c=>c.addEventListener('change',e=>{document.body.dataset[e.target.dataset.layer]=e.target.checked?'on':'off'}));
